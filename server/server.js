@@ -4,7 +4,7 @@ const http = require('http')
 const socketio = require('socket.io')
 const KoaStatic = require('koa-static')
 const KoaRouter = require('@koa/router')
-
+const url = require('url')
 const DynamoApi = require('./DynamoApi.js')
 const Router = require('./router.js')
 
@@ -25,19 +25,22 @@ const io = socketio(server)
 
 io.on('connection', async socket => {
 
-    console.log('someone connected')
+    console.log('connected')
+    console.log(socket.request._query.hash)
+    const hash = socket.request._query.hash
+
+    socket.join(hash)
 
     socket.on('join', obj => {
-        console.log('someone joined', obj)
-        io.emit('join', obj)
+        io.to(hash).emit('join', obj)
     })
 
     socket.on('msg', async msg => {
-        io.emit('msg', msg)
-        db.putMessage({ chat: 'root', usr: msg.usr, txt: msg.txt })
+        io.to(hash).emit('msg', msg)
+        db.putMessage({ chat: hash, usr: msg.usr, txt: msg.txt })
     })
 
-    let messages = await db.latestMessages({ chat: 'root' })
+    let messages = await db.latestMessages({ chat: hash })
 
     socket.emit('welcome', messages)
 

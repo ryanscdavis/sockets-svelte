@@ -10,9 +10,6 @@ router.get('/api', ctx => {
     ctx.body = 'OK'
 })
 
-router.get('/api/chats/:chat', async ctx => {
-    console.log('get')
-    ctx.body = await db.latestMessages({ chat: ctx.params.chat })
-})
+
 
 module.exports = router

@@ -6,7 +6,8 @@
 
     let usr = null
     let messages = []
-    const socket = io()
+    const hash = window.location.hash.substr(1)
+    const socket = io({ query: `hash=${hash}` })
 
     socket.on('welcome', msgs => {
         messages = msgs.reverse()

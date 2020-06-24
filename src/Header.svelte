@@ -9,9 +9,11 @@
 
 <style>
     header {
-        text-align: center;
         font-size: 18px;
-        padding: 10px;
         border-bottom: 1px solid rgb(200,200,200);
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 </style>

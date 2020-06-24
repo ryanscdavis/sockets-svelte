@@ -53,6 +53,7 @@
 
     .chatbox {
         height: 100%;
+        height: calc(100vh - 120px);
         overflow-y: auto;
         display: flex;
         flex-direction: column;

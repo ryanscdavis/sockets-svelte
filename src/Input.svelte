@@ -25,9 +25,10 @@
 
     form {
         display: flex;
-        padding: 10px;
         font-family: 'Overpass', sans-serif;
         color: rgb(30,30,30);
+        height: 60px;
+        padding: 0 10px 20px 10px;
     }
 
     input {
@@ -37,6 +38,7 @@
         margin-right: 10px;
         font-size: 16px;
         width: 100%;
+        height: 40px;
     }
 
     button {
@@ -51,5 +53,4 @@
     button:hover {
         cursor: pointer;
     }
-
 </style>

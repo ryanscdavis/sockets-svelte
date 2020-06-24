@@ -25,23 +25,26 @@ const io = socketio(server)
 
 io.on('connection', async socket => {
 
-    console.log('connected')
-    console.log(socket.request._query.hash)
-    const hash = socket.request._query.hash
+    const chat = socket.request._query.chat
+    console.log('connected from chat: ', chat)
 
-    socket.join(hash)
+    socket.join(chat)
 
     socket.on('join', obj => {
-        io.to(hash).emit('join', obj)
+        io.to(chat).emit('join', obj)
     })
 
     socket.on('msg', async msg => {
-        io.to(hash).emit('msg', msg)
-        db.putMessage({ chat: hash, usr: msg.usr, txt: msg.txt })
+        console.log('received message')
+        io.to(chat).emit('msg', msg)
+        db.putMessage(msg).then(res => {
+            console.log('successfully wrote message to db')
+        })
     })
 
-    let messages = await db.latestMessages({ chat: hash })
-
+    console.log('query db for messages in chat: ', chat)
+    let messages = await db.latestMessages({ chat })
+    console.log(`Found ${messages.length} messages`)
     socket.emit('welcome', messages)
 
 })

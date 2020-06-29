@@ -32,3 +32,11 @@ button, input, optgroup, select, textarea {
 	margin: 0; /* 2 */
 }
 
+
+html, body {
+    overscroll-behavior: none;
+    position: fixed;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+}

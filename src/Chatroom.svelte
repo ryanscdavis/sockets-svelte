@@ -1,101 +1,116 @@
+
 <script>
+    import { onMount, createEventDispatcher } from "svelte";
 
-    import { onMount, createEventDispatcher } from 'svelte'
-
-    export let hash = ''
-    export let usr = ''
     export let messages = []
 
-    let boxRef = null
     let formRef = null
+    let chatboxRef = null
     let messageText = ''
-    let lastMessage = null
-    const dispatch = createEventDispatcher()
-
-    $: lastMessage && lastMessage.scrollIntoView({ behavior: 'smooth' })
+    let dispatch = createEventDispatcher()
+    let ref = null
 
     const px = v => v.toString() + 'px'
 
-    const update = () => {
-
-        const { width, height, offsetTop, offsetLeft } = window.visualViewport
-
-        formRef.style.width = px(width)
-        formRef.style.left = px(offsetLeft)
+    const visualViewportUpdate = () => {
+        const {height, offsetTop } = window.visualViewport
+        chatboxRef.style['max-height'] = px(height - 60)
+        chatboxRef.style.top = px(offsetTop)
         formRef.style.top = px(offsetTop + height - 60)
-        boxRef.style.width = px(width)
-        boxRef.style.height = px(height - 60)
-        boxRef.style.left = px(offsetLeft)
-        boxRef.style.top = px(offsetTop)
+    }
+
+    const handleTouchStart = (e) => {
+
+        const {height, offsetTop } = window.visualViewport
+
+        if (chatboxRef.getBoundingClientRect().height < height - 60 - 300) {
+            ref.focus()
+            e.preventDefault()
+        }
 
     }
 
-    // firefox doesnt have visualViewport enabled by default
-    if (window.visualViewport) {
+    const handleTouchMove = (e) => {
 
-        onMount(update)
+        const {height, offsetTop } = window.visualViewport
 
-        window.visualViewport.addEventListener('resize', update)
-        window.visualViewport.addEventListener('scroll', update)
+        if (chatboxRef.getBoundingClientRect().height < height - 60) {
+            e.preventDefault()
+        }
+        else {
+            e.stopPropagation()
+        }
 
     }
 
-    const handleSubmit = e => {
-        e.preventDefault()
+    onMount(() => {
+
+        document.getElementById('body').addEventListener('touchmove', e => e.preventDefault(),  { passive: false })
+        chatboxRef.addEventListener('touchmove', handleTouchMove, { passive: false })
+
+        window.visualViewport.addEventListener('resize', visualViewportUpdate)
+        window.visualViewport.addEventListener('scroll', visualViewportUpdate)
+
+        visualViewportUpdate()
+
+        formRef.addEventListener('touchstart', handleTouchStart, { passive: false })
+
+    })
+
+    function handleSubmit (event) {
+        event.preventDefault()
         dispatch('send', { txt: messageText })
         messageText = ''
     }
 
+
 </script>
 
+<form class='invisible' on:submit={handleSubmit}>
+    <input bind:this={ref} bind:value={messageText}/>
+</form>
 
-
-<div class='container'>
-
-    <div class='chatbox' bind:this={boxRef}>
-
-        { #each messages as msg }
-            <p bind:this={lastMessage}>{ msg.txt }</p>
-        { /each }
-
-    </div>
-
-    <form bind:this={formRef} on:submit={handleSubmit}>
-        <input bind:value={messageText}>
-    </form>
-
+<div class='chatbox' id='chatbox' bind:this={chatboxRef}>
+    { #each messages as msg }
+        <p>{ msg.txt }</p>
+    { /each }
 </div>
+
+<form bind:this={formRef} on:submit={handleSubmit}>
+    <input bind:value={messageText}/>
+</form>
 
 <style>
 
-    .container {
-        position: absolute;
-        font-size: 14px;
+    .invisible {
+        height: 0;
+        width: 0;
     }
 
     .chatbox {
+        border: 0px solid red;
         position: fixed;
-        border: 0px solid black;
-        bottom: 60px;
+        overflow: scroll;
         width: 100%;
-        height: calc(100vh - 60px);
-        overflow: auto;
     }
 
     form {
         position: fixed;
-        bottom: 0;
         height: 60px;
+        border-top: 1px solid rgb(200,200,200);
         width: 100%;
-        padding: 10px;
+    }
+
+    p {
+        margin: 0;
+        padding-top: 10px;
+        padding-bottom: 10px;
     }
 
     input {
         width: 100%;
-        border-radius: 5px;
-        border: 1px solid rgb(200,200,200);
-        outline: none;
         height: 100%;
+        border: none;
+        outline: none;
     }
-
 </style>

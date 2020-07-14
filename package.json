@@ -4,7 +4,7 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "start": "sirv public",
+    "start": "node server/server.js",
     "server": "npx nodemon --watch public --watch server -e css,map,html,js server/server.js"
   },
   "devDependencies": {
@@ -21,11 +21,11 @@
     "@koa/router": "^9.0.1",
     "@rollup/plugin-json": "^4.1.0",
     "aws-sdk": "^2.701.0",
+    "isomorphic-ws": "^4.0.1",
     "koa": "^2.12.1",
     "koa-send": "^5.0.0",
     "koa-static": "^5.0.0",
     "sirv-cli": "^0.4.4",
-    "socket.io": "^2.3.0",
-    "socket.io-client": "^2.3.0"
+    "ws": "^7.3.1"
   }
 }

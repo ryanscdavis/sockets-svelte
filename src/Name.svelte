@@ -15,7 +15,7 @@
 
 <div class='container'>
 
-    <p>Hi, welcome to the chat!</p>
+    <p>Hi, welcome to the chat!!</p>
     <p>What should we call you?</p>
     <form on:submit={handleSubmit}>
         <input bind:value={name}/>

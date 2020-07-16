@@ -1,57 +1,39 @@
 <script>
 
     import { onMount } from 'svelte'
-    import WebSocket from 'isomorphic-ws'
+    import ClientSocket from './ClientSocket.js'
 
     import Name from './Name.svelte'
     import Chatroom from './Chatroom.svelte'
 
     let usr = null
     let messages = []
-    let ws = null
+    let clientSocket = null
 
     $: hash = window.location.hash
     $: chat = hash.substr(1)
 
+    function handleMessages (data) {
+        messages = reverse(data)
+    }
 
     onMount(() => {
 
         const host = window.location.host
-        console.log('mounted, connecting to host', host)
 
-        // const ws = new WebSocket('ws://localhost:8000')
-        ws = new WebSocket(`ws://${host}`)
-
-        ws.onopen = function onOpen () {
-            const data = { event: 'join', chat: chat }
-            ws.send(JSON.stringify(data))
-        }
-
-        ws.onmessage = function onMessage(messageEvent) {
-            const data = JSON.parse(messageEvent.data)
-            console.log('just received data from server')
-            console.log(data)
-            const event = data['event']
-            if (event === 'messages') {
-                console.log({ event })
-                messages = data['messages']
-                messages = messages.reverse()
-            }
-
-            if (event === 'message') {
-                messages = [ ...messages, data['message'] ]
-            }
-        }
+        clientSocket = new ClientSocket(host, chat)
+        clientSocket.on('messages', data => messages = data.reverse())
+        clientSocket.on('message', data => messages = [ ...messages, data ])
+        clientSocket.connect()
 
     })
 
     const sendMessage = (event) => {
-        console.log('received send event')
+
         const txt = event.detail.txt
-        const message = { chat, usr, txt }
-        const data = { event: 'message', message }
-        if (ws) ws.send(JSON.stringify(data))
-        else console.log('ws not available')
+        const data = { chat, usr, txt }
+        clientSocket.send('message', data)
+
     }
 
     function handleJoin (event) {

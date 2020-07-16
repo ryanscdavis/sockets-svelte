@@ -57,9 +57,10 @@ socketServer.on('connection', async (ws, req) => {
 
 })
 
-socketServer.on('message', data => {
+socketServer.on('message', async data => {
 
-    const { usr, txt, chat } = data
+    const { chat, usr, txt } = data
+    const response = await db.putMessage({ chat, usr, txt })
     const message = JSON.stringify({ event: 'message', data })
     sockets.get(chat).forEach(ws => ws.send(message))
 

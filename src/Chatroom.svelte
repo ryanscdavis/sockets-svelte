@@ -3,7 +3,7 @@
 
     import { onMount, createEventDispatcher } from "svelte";
 
-    export let chat = ''
+    export let chat = 'chatbox'
     export let usr = ''
     export let messages = []
 
@@ -66,7 +66,7 @@
 
 <main>
 
-    <header>#{chat}</header>
+    <header><h1>#{chat}</h1></header>
 
     <section>
         { #each messages as msg, i }
@@ -104,10 +104,17 @@
     }
 
     header {
-        font-weight: bold;
-        line-height: var(--header-height);
-        text-align: center;
+        height: var(--header-height);
         box-shadow: 0 5px 10px 5px rgba(0,0,0,0.05);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    h1 {
+        font-weight: bold;
+        margin: 0;
+        padding: 0;
     }
 
     section {

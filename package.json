@@ -24,10 +24,13 @@
     "aws-sdk": "^2.701.0",
     "isomorphic-ws": "^4.0.1",
     "koa": "^2.12.1",
+    "koa-bodyparser": "^4.3.0",
     "koa-send": "^5.0.0",
     "koa-static": "^5.0.0",
     "sirv-cli": "^0.4.4",
     "url-parse": "^1.4.7",
+    "urlb64touint8array": "^1.0.3",
+    "web-push": "^3.4.4",
     "ws": "^7.3.1"
   }
 }

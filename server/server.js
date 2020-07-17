@@ -6,10 +6,11 @@ const KoaStatic = require('koa-static')
 
 const Koa = require('koa')
 const KoaRouter = require('@koa/router')
-
+const KoaBodyParser = require('koa-bodyparser')
 const DynamoApi = require('./DynamoApi.js')
 const Router = require('./router.js')
 const SocketServer = require('./SocketServer.js')
+const NotificationService = require('./NotificationService.js')
 
 const root = './public'
 const port = process.env.PORT || 8000
@@ -18,6 +19,7 @@ const db = new DynamoApi({ tableName: 'Messages', region: 'us-east-1' })
 
 const chats = new Map()
 
+app.use(KoaBodyParser())
 app.use(Router.routes())
 app.use(KoaStatic(root, {}))
 
@@ -63,6 +65,7 @@ socketServer.on('message', async data => {
     const response = await db.putMessage({ chat, usr, txt })
     const message = JSON.stringify({ event: 'message', data })
     sockets.get(chat).forEach(ws => ws.send(message))
+    NotificationService.notify(data)
 
 })
 

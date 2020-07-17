@@ -16,7 +16,7 @@ export default class ClientSocket {
 
     connect () {
 
-        this.ws = new WebSocket(`ws://${this.host}?chat=${this.chat}`)
+        this.ws = new WebSocket(`wss://${this.host}?chat=${this.chat}`)
 
         this.ws.onopen      = this.onOpen.bind(this)
         this.ws.onmessage   = this.onMessage.bind(this)

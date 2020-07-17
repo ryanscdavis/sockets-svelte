@@ -52,7 +52,7 @@ socketServer.on('connection', async (ws, req) => {
     })
 
     const messages = await db.latestMessages({ chat })
-
+    console.log('Message from database for chat', chat, messages.length)
     if (ws.connected) {
         ws.send(JSON.stringify({ event: 'messages', data: messages }))
     }

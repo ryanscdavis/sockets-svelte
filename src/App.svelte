@@ -14,6 +14,7 @@
 
     $: hash = window.location.hash
     $: chat = hash.substr(1)
+    $: secure = window.location.protocol === 'https:'
 
     function handleMessages (data) {
         messages = reverse(data)
@@ -23,7 +24,7 @@
 
         const host = window.location.host
 
-        clientSocket = new ClientSocket(host, chat)
+        clientSocket = new ClientSocket(secure, host, chat)
         clientSocket.on('messages', data => messages = data.reverse())
         clientSocket.on('message', data => messages = [ ...messages, data ])
         clientSocket.connect()

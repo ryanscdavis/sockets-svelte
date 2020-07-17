@@ -2,7 +2,6 @@
 https://www.paulirish.com/2012/box-sizing-border-box-ftw/ */
 html {
     box-sizing: border-box;
-    font-family: "Overpass", sans-serif;
 }
 
 body {

@@ -112,6 +112,7 @@
     }
 
     h1 {
+        font-size: inherit;
         font-weight: bold;
         margin: 0;
         padding: 0;
@@ -124,7 +125,7 @@
         max-height: calc(100% - var(--header-height) - var(--footer-height));
         border: 0px solid red;
         bottom: var(--footer-height);
-        padding: 1em;
+        padding: 0 1em;
     }
 
     .bubble {

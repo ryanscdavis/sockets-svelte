@@ -2,6 +2,7 @@
 <script>
 
     import { onMount, createEventDispatcher } from "svelte";
+    import InputBox from './InputBox.svelte'
 
     export let chat = 'chatbox'
     export let usr = ''
@@ -43,10 +44,10 @@
         return Math.abs(hash);
     }
 
-    // bind to the form
-    function handleSubmit (event) {
+    function handleSend (event) {
         event.preventDefault()
-        dispatch('send', { txt: messageText })
+        const txt = event.detail.inputText
+        dispatch('send', { txt })
         messageText = ''
     }
 
@@ -82,11 +83,7 @@
         { /each }
     </section>
 
-    <footer>
-        <form on:submit={handleSubmit}>
-            <input bind:value={messageText}/>
-        </form>
-    </footer>
+    <InputBox on:submit={handleSend}/>
 
 </main>
 
@@ -148,31 +145,6 @@
 
     .text {
         margin-top: 0.5em;
-    }
-
-    footer {
-        position: fixed;
-        height: var(--footer-height);
-        width: 100%;
-        border-top: 2px solid white;
-        bottom: 0;
-        border: 0px solid green;
-        display: flex;
-        justify-content: center;
-    }
-
-    form {
-        width: 90%;
-        margin-top: 10px;
-    }
-
-    input {
-        width: 100%;
-        border: 0;
-        outline: 0;
-        height: 2.75em;
-        background-color: rgb(225,225,225);
-        border-radius: 2.75em;
     }
 
 </style>

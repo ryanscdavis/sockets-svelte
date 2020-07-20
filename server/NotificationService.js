@@ -1,34 +1,24 @@
 
 const webpush = require('web-push')
+const DynamoApi = require('./DynamoApi.js')
 
 class NotificationService {
 
     constructor () {
         this.count = 0                  // number of subscriptions
         this.subscriptions = new Map()  // subscriptions[chat][endpoing] -> subscription
+        this.db = new DynamoApi({ tableName: 'Messages', region: 'us-east-1' })
     }
 
-    subscribe (subscriptionMessage) {
+    async subscribe (subscriptionMessage) {
 
+        const active = true
         const { chat, subscription } = subscriptionMessage
-        const { endpoint } = subscription
-
-        if (this.subscriptions.has(chat)) {
-            const chatSubs = this.subscriptions.get(chat)
-            if (chatSubs.has(endpoint) === false) { this.count += 1 }
-            chatSubs.set(endpoint, subscription)
-        }
-        else {
-            const m = new Map([[endpoint, subscription]])
-            this.subscriptions.set(chat, m)
-            this.count += 1
-        }
-
-        console.log('subscribe', this.count)
-
+        await this.db.putSubscription({ chat, subscription, active })
+        console.log('created subscription')
     }
 
-    notify (msg) {
+    async notify (msg) {
 
         const { chat, usr, txt } = msg
 
@@ -37,18 +27,15 @@ class NotificationService {
 
         webpush.setVapidDetails('mailto:ryanscdavis@gmail.com', publicKey, privateKey)
 
-        if (this.subscriptions.has(chat)) {
+        const subs = await this.db.getActiveChatSubscriptions({ chat })
 
-            const data = JSON.stringify({ chat, usr, txt })
+        const data = JSON.stringify({ chat, usr, txt })
 
-            // send notification for every subscription in the chat
-            this.subscriptions.get(chat).forEach((sub) => {
-                webpush.sendNotification(sub, data)
-                    .then(() => console.log('notification sent'))
-                    .catch(err => console.error(err))
-            })
-
-        }
+        subs.forEach(sub => {
+            webpush.sendNotification(sub, data)
+                .then(() => console.log('notification sent'))
+                .catch(err => console.error(err))
+        })
 
     }
 

@@ -19,9 +19,12 @@
     "svelte": "^3.0.0"
   },
   "dependencies": {
+    "@fortawesome/free-regular-svg-icons": "^5.14.0",
+    "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@koa/router": "^9.0.1",
     "@rollup/plugin-json": "^4.1.0",
     "aws-sdk": "^2.701.0",
+    "fa-svelte": "^3.1.0",
     "isomorphic-ws": "^4.0.1",
     "koa": "^2.12.1",
     "koa-bodyparser": "^4.3.0",

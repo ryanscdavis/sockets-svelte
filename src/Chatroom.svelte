@@ -2,6 +2,10 @@
 <script>
 
     import { onMount, createEventDispatcher } from "svelte";
+    import Icon from 'fa-svelte'
+    import { faBellSlash } from '@fortawesome/free-regular-svg-icons/faBellSlash'
+    import { faBell } from '@fortawesome/free-regular-svg-icons/faBell'
+
     import InputBox from './InputBox.svelte'
 
     export let chat = 'chatbox'
@@ -11,8 +15,8 @@
     let messageText = ''
     let lastMessageRef = null
     let isMounted = false
+    let notificationsActive = false
     const dispatch = createEventDispatcher()
-
 
     const colors = [
         'rgb(61, 130, 236)',
@@ -55,6 +59,11 @@
         if (node) node.scrollIntoView()
     }
 
+    function toggleNotifications () {
+        console.log('toggle')
+        notificationsActive = !notificationsActive
+    }
+
     onMount(() => {
 
         if (lastMessageRef) lastMessageRef.scrollIntoView()
@@ -67,7 +76,18 @@
 
 <main>
 
-    <header><h1>#{chat}</h1></header>
+    <header>
+
+        <h1>#{chat}</h1>
+
+        <button on:click={() => notificationsActive = !notificationsActive}>
+            <Icon
+                icon={notificationsActive ? faBell : faBellSlash}
+                class='notification-icon'
+            />
+        </button>
+
+    </header>
 
     <section>
         { #each messages as msg, i }
@@ -103,12 +123,23 @@
     header {
         height: var(--header-height);
         box-shadow: 0 5px 10px 5px rgba(0,0,0,0.05);
-        display: flex;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
         align-items: center;
     }
 
+    button {
+        font-size: 22px;
+        text-align: right;
+        margin: 0 1em 0 auto;
+        outline: none;
+        border: none;
+        background-color: transparent;
+        padding: 0;
+    }
+
     h1 {
+        grid-column: 2;
         font-size: inherit;
         font-weight: bold;
         margin: 0;

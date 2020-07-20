@@ -37,6 +37,10 @@
             console.warn('Browser not compatible with service worker')
         }
 
+        if (localStorage.getItem(chat)) {
+            usr = localStorage.getItem(chat)
+        }
+
     })
 
     const sendMessage = (event) => {
@@ -49,6 +53,7 @@
 
     function handleJoin (event) {
         usr = event.detail.usr
+        localStorage.setItem(chat, usr)
     }
 
     function askPermission () {

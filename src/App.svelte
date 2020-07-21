@@ -15,6 +15,8 @@
     $: hash = window.location.hash
     $: chat = hash.substr(1)
     $: secure = window.location.protocol === 'https:'
+    $: chatUrl = window.location.href
+    $: console.log({ chatUrl })
 
     function handleMessages (data) {
         messages = reverse(data)
@@ -135,7 +137,7 @@
 { #if usr === null }
     <Name on:join={handleJoin}/>
 { :else }
-    <Chatroom { usr } { messages } { chat } on:send={sendMessage}/>
+    <Chatroom { usr } { messages } { chat } { chatUrl } on:send={sendMessage}/>
 { /if }
 
 <style>

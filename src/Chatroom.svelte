@@ -3,19 +3,25 @@
 
     import { onMount, createEventDispatcher } from "svelte";
     import Icon from 'fa-svelte'
-    import { faBellSlash } from '@fortawesome/free-regular-svg-icons/faBellSlash'
-    import { faBell } from '@fortawesome/free-regular-svg-icons/faBell'
+
+    import { faBell } from '@fortawesome/free-solid-svg-icons/faBell'
+    import { faBellSlash } from '@fortawesome/free-solid-svg-icons/faBellSlash'
+    import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons/faExternalLinkAlt'
 
     import InputBox from './InputBox.svelte'
+    import Modal from './Modal.svelte'
+    import ExternalLink from './ExternalLink.svelte'
 
     export let chat = 'chatbox'
     export let usr = ''
     export let messages = []
+    export let chatUrl = ''
 
     let messageText = ''
     let lastMessageRef = null
     let isMounted = false
     let notificationsActive = false
+    let modalActive = false
     const dispatch = createEventDispatcher()
 
     const colors = [
@@ -36,7 +42,6 @@
     }, new Map())
 
     $: messages && messages.length && isMounted && scroll()
-
 
     function hashCode (str) {
         let hash = 0;
@@ -80,12 +85,23 @@
 
         <h1>#{chat}</h1>
 
-        <button on:click={() => notificationsActive = !notificationsActive}>
-            <Icon
-                icon={notificationsActive ? faBell : faBellSlash}
-                class='notification-icon'
-            />
-        </button>
+        <div class='control-panel'>
+
+            <button on:click={() => modalActive = true}>
+                <Icon
+                    icon={faExternalLinkAlt}
+                />
+            </button>
+
+            <button on:click={() => notificationsActive = !notificationsActive}>
+                <Icon
+                    icon={notificationsActive ? faBell : faBellSlash}
+                    class='notification-icon'
+                />
+            </button>
+
+        </div>
+
 
     </header>
 
@@ -105,14 +121,15 @@
 
     <InputBox on:submit={handleSend}/>
 
+    <Modal active={modalActive} on:close={() => modalActive = false}>
+        <ExternalLink { chatUrl } on:copy={() => modalActive = false}/>
+    </Modal>
 </main>
-
 
 <style>
 
     main {
         width: 100%;
-        height: 100%;
         margin: 0 auto;
         --header-height: 40px;
         --footer-height: 80px;
@@ -126,16 +143,28 @@
         display: grid;
         grid-template-columns: 1fr auto 1fr;
         align-items: center;
+        color: rgb(50,50,50);
+    }
+
+    .control-panel {
+        display: flex;
+        justify-content: flex-end;
+        padding-right: 1em;
+        align-items: center;
     }
 
     button {
-        font-size: 22px;
-        text-align: right;
-        margin: 0 1em 0 auto;
+        font-size: 16px;
+        display: block;
         outline: none;
         border: none;
         background-color: transparent;
         padding: 0;
+        margin: 0 0 0 1em;
+    }
+
+    button :global(svg) {
+        color: rgb(50,50,50);
     }
 
     h1 {

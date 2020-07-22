@@ -22,6 +22,8 @@
     let isMounted = false
     let notificationsActive = false
     let modalActive = false
+    let footerRef = null
+    let sectionRef = null
     const dispatch = createEventDispatcher()
 
     const colors = [
@@ -75,6 +77,22 @@
 
         isMounted = true
 
+        console.log('onmount', window.innerHeight)
+
+        const resizeObserver = new ResizeObserver(entries => {
+            for (const entry of entries) {
+                const windowHeight = window.innerHeight
+                const footerHeight = entry.contentRect.height
+                const sectionHeight = windowHeight - footerHeight - 40
+                // sectionRef.style['max-height'] = sectionHeight.toString() + 'px'
+                sectionRef.style['bottom'] = (footerHeight).toString() + 'px'
+
+                console.log('resize', { windowHeight, footerHeight, sectionHeight })
+            }
+        })
+
+        resizeObserver.observe(footerRef)
+
     })
 
 </script>
@@ -105,7 +123,7 @@
 
     </header>
 
-    <section>
+    <section bind:this={sectionRef}>
         { #each messages as msg, i }
             <div
                 class='bubble'
@@ -119,7 +137,9 @@
         { /each }
     </section>
 
-    <InputBox on:submit={handleSend}/>
+    <footer bind:this={footerRef}>
+        <InputBox on:submit={handleSend}/>
+    </footer>
 
     <Modal active={modalActive} on:close={() => modalActive = false}>
         <ExternalLink { chatUrl } on:copy={() => modalActive = false}/>
@@ -132,7 +152,7 @@
         width: 100%;
         margin: 0 auto;
         --header-height: 40px;
-        --footer-height: 80px;
+        --footer-height: 60px;
         font-size: 16px;
         font-family: 'Montserrat', sans-serif;
     }
@@ -205,6 +225,13 @@
 
     .text {
         margin-top: 0.5em;
+    }
+
+    footer {
+        min-height: var(--footer-height);
+        position: absolute;
+        bottom: 0;
+        width: 100%;
     }
 
 </style>

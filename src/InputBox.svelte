@@ -1,73 +1,83 @@
 <script>
-    import { createEventDispatcher } from "svelte";
 
-    let inputText = "";
-    const dispatch = createEventDispatcher();
+	import { createEventDispatcher, onMount, onDestroy } from 'svelte'
+    import Icon from 'fa-svelte'
+    import { faArrowCircleUp } from '@fortawesome/free-solid-svg-icons/faArrowCircleUp'
 
-    function handleSubmit(e) {
-        e.preventDefault();
-        dispatch("submit", { inputText });
-        inputText = "";
-    }
+	let inputRef = null
+	let displayButton = false
+	const dispatch = createEventDispatcher()
+
+	function handleSubmit () {
+		const inputText = inputRef.innerText
+		inputRef.innerText = '' // doesnt fire listener
+		listenerBound() // need to manually call listener
+		dispatch('submit', { inputText })
+	}
+
+	function listener () {
+		displayButton = inputRef.innerText.length > 0
+	}
+
+	const listenerBound = listener.bind(this)
+
+	onMount(() => {
+		inputRef.addEventListener('DOMCharacterDataModified', listenerBound)
+	})
+
+	onDestroy(() => {
+		inputRef.removeEventListener('DOMCharacterDataModified', listenerBound)
+	})
+
 </script>
 
-<footer>
-    <form on:submit={handleSubmit}>
-        <input type="text" bind:value={inputText} />
-        <button disabled={inputText.length === 0}>&#8593;</button>
-    </form>
-</footer>
+<div class='container'>
+	<div contenteditable="true" class='input' bind:this={inputRef}/>
+	{ #if displayButton }
+		<button on:click={handleSubmit}>
+            <Icon icon={faArrowCircleUp}/>
+        </button>
+	{ /if }
+</div>
 
 <style>
-    footer {
-        --input-height: 3em;
-        --radius: calc(var(--input-height) * 0.5);
-        border: 0px solid red;
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        height: 80px;
-        padding-top: 10px;
-    }
 
-    form {
-        height: 100%;
-        width: 90%;
-        position: relative;
-        margin: 0 auto;
-    }
+	.container {
+		border: 0px solid green;
+		width: 90%;
+		margin: 0.5em auto;
+		position: relative;
+        font-size: 16px;
+	}
 
-    input {
-        margin: 0;
-        padding: 0 3em 0 1.5em;
-        height: 3em;
-        border-radius: 1.5em;
-        width: 100%;
-        outline: none;
-        border: 0;
-        background-color: rgb(230, 230, 230);
-    }
+	.input {
+		padding: 0.25em 1.75em 0.25em 0.875em;
+		border-radius: 1em;
+		line-height: 1.5;
+		background-color: rgb(230,230,230);
+		outline: none;
+	}
 
-    button {
-        padding: 0;
-        margin: 0;
-        height: 2.5em;
-        width: 2.5em;
-        border-radius: 1.5em;
-        position: absolute;
-        right: 0.25em;
-        top: calc(0.25em);
-        border: 0;
-        background-color: rgb(61, 130, 236);
-        color: white;
-    }
+	button {
+		margin: 0;
+		padding: 0;
+		height: 1.5em;
+		width: 1.5em;
+		border-radius: 0.875em;
+		position: absolute;
+		right: 0.25em;
+		top: 0.25em;
+		border: 0;
+		color: rgb(61, 130, 236);
+	}
 
-    button:hover {
-        cursor: pointer;
-    }
+	button:hover {
+		cursor: pointer;
+	}
 
-    button:disabled {
-        background-color: grey;
-        color: grey;
-    }
+	button:disabled {
+		background-color: grey;
+		color: grey;
+	}
+
 </style>

@@ -66,7 +66,7 @@
 		border-radius: 0.875em;
 		position: absolute;
 		right: 0.25em;
-		top: 0.25em;
+		bottom: 0.25em;
 		border: 0;
 		color: rgb(61, 130, 236);
 	}

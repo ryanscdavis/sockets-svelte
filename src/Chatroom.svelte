@@ -171,16 +171,18 @@
         justify-content: flex-end;
         padding-right: 1em;
         align-items: center;
+        height: 100%;
     }
 
     button {
-        font-size: 16px;
         display: block;
         outline: none;
         border: none;
         background-color: transparent;
-        padding: 0;
-        margin: 0 0 0 1em;
+        padding: 0.75em;
+        margin: 0 0 0 0em;
+        height: var(--header-height);
+        width: var(--header-height);
     }
 
     button :global(svg) {

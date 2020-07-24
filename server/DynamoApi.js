@@ -3,10 +3,50 @@ const AWS = require('aws-sdk')
 
 class DynamoApi {
 
-
     constructor({ tableName, region }) {
         this.tableName = tableName
         this.region = region
+    }
+
+    // write event to the database
+    async writeEvent (event) {
+
+        const promise = new Promise((resolve, reject) => {
+
+            const documentClient = new AWS.DynamoDB.DocumentClient({
+                'region': this.region
+            })
+
+            const chat  = event.getChat()
+            const evt   = event.getEventType()
+            const ts    = event.getTimestamp()
+            const usr   = event.getUserName()
+            const data  = event.getData()
+
+            const pk = `CHAT#${chat}`
+            const sk = `EVT#${evt}#TS#${ts}#USR#${usr}`
+
+            const item = { pk, sk, ...data }
+
+            const params = {
+                TableName: this.tableName,
+                Item: item
+            }
+
+            const callback = (err, data) => {
+                if (err) reject(err)
+                else {
+                    console.log('done writing', data)
+                    resolve(data)
+                }
+            }
+
+            documentClient.put(params, callback)
+
+        })
+
+        return promise
+
     }
 
 
@@ -56,8 +96,8 @@ class DynamoApi {
             const params = {
                 TableName: this.tableName,
                 KeyConditionExpression: 'pk = :pk and begins_with(sk, :ts)',
-                ExpressionAttributeValues: { ':pk': pk, ':ts': 'TS#' },
-                ProjectionExpression: 'ts, usr, txt',   // only return these keys
+                ExpressionAttributeValues: { ':pk': pk, ':ts': 'EVT#msg' },
+                // ProjectionExpression: 'ts, usr, txt',   // only return these keys
                 ScanIndexForward: false,
                 Limit: 50
             }
@@ -108,7 +148,7 @@ class DynamoApi {
     }
 
     // returns a list of active subscriptions for a chat
-    async getActiveChatSubscriptions ({ chat }) {
+    async getChatSubscriptions ({ chat }) {
 
         const promise = new Promise((resolve, reject) => {
 
@@ -121,8 +161,7 @@ class DynamoApi {
             const params = {
                 TableName: this.tableName,
                 KeyConditionExpression: 'pk = :pk and begins_with(sk, :sub)',
-                ExpressionAttributeValues: { ':pk': pk, ':sub': 'SUB#' },
-                ProjectionExpression: 'subscription, active',   // only return these keys
+                ExpressionAttributeValues: { ':pk': pk, ':sub': 'EVT#sub' },
                 ScanIndexForward: false,
                 Limit: 50
             }

@@ -11,11 +11,12 @@ const DynamoApi = require('./DynamoApi.js')
 const Router = require('./router.js')
 const SocketServer = require('./SocketServer.js')
 const NotificationService = require('./NotificationService.js')
+const Event = require('./Event.js')
 
 const root = './public'
 const port = process.env.PORT || 8000
 const app = new Koa()
-const db = new DynamoApi({ tableName: 'Messages', region: 'us-east-1' })
+const db = new DynamoApi({ tableName: 'Messages2', region: 'us-east-1' })
 
 const chats = new Map()
 
@@ -62,7 +63,17 @@ socketServer.on('connection', async (ws, req) => {
 socketServer.on('message', async data => {
 
     const { chat, usr, txt } = data
-    const response = await db.putMessage({ chat, usr, txt })
+
+    const event = new Event({
+        chat: chat,
+        evt: 'msg',
+        usr: usr,
+        ts: (new Date()).toISOString(),
+        txt: txt
+    })
+
+    const response = await db.writeEvent(event)
+
     const message = JSON.stringify({ event: 'message', data })
     sockets.get(chat).forEach(ws => ws.send(message))
     NotificationService.notify(data)

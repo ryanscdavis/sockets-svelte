@@ -14,8 +14,8 @@ class NotificationService {
 
         const active = true
         const { chat, subscription } = subscriptionMessage
-        await this.db.putSubscription({ chat, subscription, active })
-        console.log('created subscription')
+        // await this.db.putSubscription({ chat, subscription, active })
+        // console.log('created subscription')
     }
 
     async notify (msg) {
@@ -27,7 +27,8 @@ class NotificationService {
 
         webpush.setVapidDetails('mailto:ryanscdavis@gmail.com', publicKey, privateKey)
 
-        const subs = await this.db.getActiveChatSubscriptions({ chat })
+        // const subs = await this.db.getActiveChatSubscriptions({ chat })
+        const subs = []
 
         const data = JSON.stringify({ chat, usr, txt })
 

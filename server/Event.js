@@ -8,10 +8,19 @@ const crtObj = {
     usr: Joi.string()
 }
 
+const conObj = {
+    chat: Joi.string(),
+    evt: Joi.string().valid('con'),
+    ts: Joi.date().iso(),
+    usrId: Joi.string(),
+    con: Joi.number().valid(1, -1)
+}
+
 const addObj = {
     chat: Joi.string(),
     evt: Joi.string().valid('add'),
     ts: Joi.date().iso(),
+    usrId: Joi.string(),
     usr: Joi.string(),
     add: Joi.number().valid(1,-1)
 }

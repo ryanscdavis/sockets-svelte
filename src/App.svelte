@@ -7,28 +7,36 @@
     import Chatroom from './Chatroom.svelte'
 
     import toUint8Array from 'urlb64touint8array'
+    import uuid from 'uuid/v4'
 
     let usr = null
+    let usrId = null
     let messages = []
+    let friends = []
     let clientSocket = null
 
     $: hash = window.location.hash
     $: chat = hash.substr(1)
     $: secure = window.location.protocol === 'https:'
     $: chatUrl = window.location.href
-    $: console.log({ chatUrl })
-
-    function handleMessages (data) {
-        messages = reverse(data)
-    }
 
     onMount(() => {
 
         const host = window.location.host
 
-        clientSocket = new ClientSocket(secure, host, chat)
+        if (localStorage.getItem('usrId')) {
+            usrId = localStorage.getItem('usrId')
+        }
+        else {
+            usrId = uuid()
+            localStorage.setItem('usrId', usrId)
+        }
+
+        clientSocket = new ClientSocket(usrId, secure, host, chat)
         clientSocket.on('messages', data => messages = data.reverse())
         clientSocket.on('message', data => messages = [ ...messages, data ])
+        clientSocket.on('add', data => messages = [ ...messages, data ])
+        clientSocket.on('friends', data => friends = data)
         clientSocket.connect()
 
         console.log('try to register service worker')
@@ -56,6 +64,7 @@
     function handleJoin (event) {
         usr = event.detail.usr
         localStorage.setItem(chat, usr)
+        clientSocket.send('add', { usrId, usr, chat })
     }
 
     function askPermission () {
@@ -137,7 +146,7 @@
 { #if usr === null }
     <Name on:join={handleJoin}/>
 { :else }
-    <Chatroom { usr } { messages } { chat } { chatUrl } on:send={sendMessage}/>
+    <Chatroom { usr } events={ messages } { chat } { chatUrl } { friends } on:send={sendMessage}/>
 { /if }
 
 <style>

@@ -4,7 +4,7 @@ import WebSocket from 'isomorphic-ws'
 
 export default class ClientSocket {
 
-    constructor(secure, host, chat) {
+    constructor(usrId, secure, host, chat) {
 
         this.secure = secure
         this.host = host
@@ -12,6 +12,7 @@ export default class ClientSocket {
         this.callbacks = {}
         this.connected = false
         this.interval = null
+        this.usrId = usrId
 
     }
 
@@ -19,7 +20,7 @@ export default class ClientSocket {
 
         const protocol = this.secure ? 'wss:' : 'ws:'
 
-        this.ws = new WebSocket(`${protocol}//${this.host}?chat=${this.chat}`)
+        this.ws = new WebSocket(`${protocol}//${this.host}?chat=${this.chat}&usrId=${this.usrId}`)
 
         this.ws.onopen      = this.onOpen.bind(this)
         this.ws.onmessage   = this.onMessage.bind(this)

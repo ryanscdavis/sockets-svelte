@@ -24,7 +24,7 @@
         align-items: center;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.66);
+        background-color: rgba(0, 0, 0, 0.8);
     }
 
     .window {

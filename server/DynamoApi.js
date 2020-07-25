@@ -18,13 +18,12 @@ class DynamoApi {
             })
 
             const chat  = event.getChat()
-            const evt   = event.getEventType()
             const ts    = event.getTimestamp()
             const usr   = event.getUserName()
             const data  = event.getData()
 
             const pk = `CHAT#${chat}`
-            const sk = `EVT#${evt}#TS#${ts}#USR#${usr}`
+            const sk = `TS#${ts}#USR#${usr}`
 
             const item = { pk, sk, ...data }
 
@@ -81,6 +80,72 @@ class DynamoApi {
 
     }
 
+    async getFriendList ({ chat }) {
+        const promise = new Promise((resolve, reject) => {
+
+            const documentClient = new AWS.DynamoDB.DocumentClient({
+                'region': this.region
+            })
+
+            const pk = `CHAT#${chat}`
+
+            const params = {
+                TableName: this.tableName,
+                KeyConditionExpression: 'pk = :pk',
+                FilterExpression: 'evt = :evt',
+                ExpressionAttributeValues: { ':pk': pk, ':evt': 'add' },
+                ScanIndexForward: false
+            }
+
+            const callback = (err, data) => {
+                if (err) {
+                    reject(err)
+                }
+                else {
+                    let friends = data.Items.map(item => item.usr)
+                    resolve(friends)
+                }
+            }
+
+            documentClient.query(params, callback)
+
+        })
+
+        return promise
+    }
+
+    // returns the last 50 events
+    async latestEvents ({ chat }) {
+
+        const promise = new Promise((resolve, reject) => {
+
+            const documentClient = new AWS.DynamoDB.DocumentClient({
+                'region': this.region
+            })
+
+            const pk = `CHAT#${chat}`
+
+            const params = {
+                TableName: this.tableName,
+                KeyConditionExpression: 'pk = :pk',
+                ExpressionAttributeValues: { ':pk': pk },
+                ScanIndexForward: false,
+                Limit: 50
+            }
+
+            const callback = (err, data) => {
+                if (err) reject(err)
+                else resolve(data.Items)
+            }
+
+            documentClient.query(params, callback)
+
+        })
+
+        return promise
+
+    }
+
     // returns the last 50 messages
     // if chat does not exist, returns empty array
     async latestMessages ({ chat }) {
@@ -95,8 +160,9 @@ class DynamoApi {
 
             const params = {
                 TableName: this.tableName,
-                KeyConditionExpression: 'pk = :pk and begins_with(sk, :ts)',
-                ExpressionAttributeValues: { ':pk': pk, ':ts': 'EVT#msg' },
+                KeyConditionExpression: 'pk = :pk',
+                FilterExpression: 'evt = :evt',
+                ExpressionAttributeValues: { ':pk': pk, ':evt': 'msg' },
                 // ProjectionExpression: 'ts, usr, txt',   // only return these keys
                 ScanIndexForward: false,
                 Limit: 50

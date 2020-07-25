@@ -38,6 +38,7 @@ socketServer.on('connection', async (ws, req) => {
 
     const query = urlParse(req.url, true).query
     const chat = query['chat']
+    const usrId = query['usrId']
 
     if (sockets.has(chat)) {
         sockets.get(chat).add(ws)
@@ -52,10 +53,16 @@ socketServer.on('connection', async (ws, req) => {
         if (chatroom.size === 0) sockets.delete(chat)
     })
 
-    const messages = await db.latestMessages({ chat })
-    console.log('Message from database for chat', chat, messages.length)
+    const events = await db.latestEvents({ chat })
+    console.log('Message from database for chat', chat, events.length)
     if (ws.connected) {
-        ws.send(JSON.stringify({ event: 'messages', data: messages }))
+        ws.send(JSON.stringify({ event: 'messages', data: events }))
+    }
+
+    const friends = await db.getFriendList({ chat })
+    console.log('Fetched friends', friends.length)
+    if (ws.connected) {
+        ws.send(JSON.stringify({ event: 'friends', data: friends }))
     }
 
 })
@@ -80,47 +87,23 @@ socketServer.on('message', async data => {
 
 })
 
+socketServer.on('add', async data => {
 
-// async function handleJoinEvent (ws, data) {
-//     const chat = data['chat']
-//     const messages = await db.latestMessages({ chat })
-//     const response = JSON.stringify({ event: 'messages', data: { messages } })
-//     ws.send(response)
-//     ws.isAlive = true
-//     if (chats.has(chat)) chats.get(chat).push(ws)
-//     else chats.set(chat, [ws])
-// }
+    const { usrId, usr, chat } = data
 
-// async function handleMessageEvent (ws, data) {
-//     const { chat, usr, txt } = data
-//     const response = await db.putMessage({ chat, usr, txt })
-//     const message = JSON.stringify({ event: 'message', data })
-//     chats.get(chat).forEach(socket => socket.send(message))
-// }
+    const event = new Event({
+        chat: chat,
+        evt: 'add',
+        usrId: usrId,
+        usr: usr,
+        ts: (new Date()).toISOString(),
+        add: 1
+    })
 
-// function handlePong(ws) {
-//     ws.isAlive = true
-// }
+    const response = await db.writeEvent(event)
 
-// wss.on('connection', function (ws) {
+    const message = JSON.stringify({ event: 'add', data })
+    sockets.get(chat).forEach(ws => ws.send(message))
 
-//     console.log('connection made')
+})
 
-//     ws.on('message', async function (message) {
-
-//         const { event, data } = JSON.parse(message)
-
-//         console.log(new Date(), event)
-
-//         if (event === 'join')
-//             handleJoinEvent(ws, data)
-//         else if (event === 'message')
-//             handleMessageEvent(ws, data)
-//         else if (event === 'pong')
-//             handlePong(ws)
-//         else
-//             console.error(event)
-
-//     })
-
-// })

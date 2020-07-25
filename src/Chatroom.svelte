@@ -6,22 +6,25 @@
 
     import { faBell } from '@fortawesome/free-solid-svg-icons/faBell'
     import { faBellSlash } from '@fortawesome/free-solid-svg-icons/faBellSlash'
+    import { faUserFriends } from '@fortawesome/free-solid-svg-icons/faUserFriends'
     import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons/faExternalLinkAlt'
 
     import InputBox from './InputBox.svelte'
     import Modal from './Modal.svelte'
     import ExternalLink from './ExternalLink.svelte'
+    import FriendList from './FriendList.svelte'
 
     export let chat = 'chatbox'
     export let usr = ''
-    export let messages = []
+    export let events = []
     export let chatUrl = ''
+    export let friends = []
 
     let messageText = ''
     let lastMessageRef = null
     let isMounted = false
     let notificationsActive = false
-    let modalActive = false
+    let modalActive = null
     let footerRef = null
     let sectionRef = null
     const dispatch = createEventDispatcher()
@@ -32,7 +35,7 @@
         'rgb(241, 162, 33)'
     ]
 
-    $: hashes = messages.reduce((acc, msg) => {
+    $: hashes = events.reduce((acc, msg) => {
         if (!acc.has(msg.usr)) {
             const h = hashCode(msg.usr)
             const i = h % colors.length
@@ -43,7 +46,7 @@
         return acc
     }, new Map())
 
-    $: messages && messages.length && isMounted && scroll()
+    $: events && events.length && isMounted && scroll()
 
     function hashCode (str) {
         let hash = 0;
@@ -105,7 +108,13 @@
 
         <div class='control-panel'>
 
-            <button on:click={() => modalActive = true}>
+            <button on:click={() => modalActive = 'Friends'}>
+                <Icon
+                    icon={faUserFriends}
+                />
+            </button>
+
+            <button on:click={() => modalActive = 'Ext'}>
                 <Icon
                     icon={faExternalLinkAlt}
                 />
@@ -124,25 +133,46 @@
     </header>
 
     <section bind:this={sectionRef}>
-        { #each messages as msg, i }
-            <div
-                class='bubble'
-                class:mine={msg.usr === usr}
-                use:scroll
-                style={`background-color: ${hashes.get(msg.usr)};`}
-            >
-                <span class='name'>{ msg.usr }</span>
-                <p class='text'>{ msg.txt }</p>
-            </div>
+
+        { #each events as event, i }
+
+            { #if event.evt === 'add' }
+
+                <div class='bubble'
+                style={`background-color: rgb(220,220,220); color: black;`}
+
+                >
+                    <p>{event.usr} just joined the chat!</p>
+                </div>
+
+            { :else }
+
+                <div
+                    class='bubble'
+                    class:mine={event.usr === usr}
+                    use:scroll
+                    style={`background-color: ${hashes.get(event.usr)};`}
+                >
+                    <span class='name'>{ event.usr }</span>
+                    <p class='text'>{ event.txt }</p>
+                </div>
+
+            { /if }
+
         { /each }
+
     </section>
 
     <footer bind:this={footerRef}>
         <InputBox on:submit={handleSend}/>
     </footer>
 
-    <Modal active={modalActive} on:close={() => modalActive = false}>
-        <ExternalLink { chatUrl } on:copy={() => modalActive = false}/>
+    <Modal active={modalActive} on:close={() => modalActive = null}>
+        { #if modalActive === 'Ext' }
+            <ExternalLink { chatUrl } on:copy={() => modalActive = null}/>
+        { :else }
+            <FriendList { friends }/>
+        { /if }
     </Modal>
 </main>
 

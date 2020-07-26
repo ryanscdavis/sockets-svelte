@@ -87,7 +87,6 @@
                 const windowHeight = window.innerHeight
                 const footerHeight = entry.contentRect.height
                 const sectionHeight = windowHeight - footerHeight - 40
-                // sectionRef.style['max-height'] = sectionHeight.toString() + 'px'
                 sectionRef.style['bottom'] = (footerHeight).toString() + 'px'
 
                 console.log('resize', { windowHeight, footerHeight, sectionHeight })

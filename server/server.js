@@ -102,7 +102,7 @@ socketServer.on('add', async data => {
 
     const response = await db.writeEvent(event)
 
-    const message = JSON.stringify({ event: 'add', data })
+    const message = JSON.stringify({ evt: 'add', data })
     sockets.get(chat).forEach(ws => ws.send(message))
 
 })

@@ -81,8 +81,14 @@ socketServer.on('message', async data => {
 
     const response = await db.writeEvent(event)
 
-    const message = JSON.stringify({ event: 'message', data })
-    sockets.get(chat).forEach(ws => ws.send(message))
+    // we need to wrap this event for the socket server
+    const message = {
+        event: 'message',
+        data: event.getData()
+    }
+
+    const json = JSON.stringify(message)
+    sockets.get(chat).forEach(ws => ws.send(json))
     NotificationService.notify(data)
 
 })
@@ -102,8 +108,14 @@ socketServer.on('add', async data => {
 
     const response = await db.writeEvent(event)
 
-    const message = JSON.stringify({ evt: 'add', data })
-    sockets.get(chat).forEach(ws => ws.send(message))
+    // we need to wrap this event for the socket server
+    const message = {
+        event: 'add',
+        data: event.getData()
+    }
+
+    const json = JSON.stringify(message)
+    sockets.get(chat).forEach(ws => ws.send(json))
 
 })
 

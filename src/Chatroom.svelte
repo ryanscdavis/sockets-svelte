@@ -1,7 +1,7 @@
 
 <script>
 
-    import { onMount, createEventDispatcher } from "svelte";
+    import { onMount, createEventDispatcher, tick } from "svelte";
     import Icon from 'fa-svelte'
 
     import { faBell } from '@fortawesome/free-solid-svg-icons/faBell'
@@ -27,12 +27,17 @@
     let modalActive = null
     let footerRef = null
     let sectionRef = null
+    let bottomRef = null
     const dispatch = createEventDispatcher()
 
     const colors = [
-        'rgb(61, 130, 236)',
-        'rgb(107, 63, 235)',
-        'rgb(241, 162, 33)'
+        '#ff9f43',
+        '#ee5253',
+        '#0abde3',
+        '#10ac84',
+        '#01a3a4',
+        '#2e86de',
+        '#341f97'
     ]
 
     $: hashes = events.reduce((acc, msg) => {
@@ -40,13 +45,25 @@
             const h = hashCode(msg.usr)
             const i = h % colors.length
             const c = colors[i]
-            console.log(msg.usr, h, i, c)
             acc.set(msg.usr, c)
         }
         return acc
     }, new Map())
 
     $: events && events.length && isMounted && scroll()
+
+    $: events && scroll()
+
+    $: eventsTF = events.map(evt => {
+        const t = new Date(evt.ts)
+        let h = t.getHours() % 12
+        h = h === 0 ? 12 : h
+        const m = t.getMinutes().toString().padStart(2,'0')
+        const pm = Math.floor(t.getHours() / 12)
+        const am = pm ? 'pm' : 'am'
+        evt['tf'] = h + ':' + m + am
+        return evt
+    })
 
     function hashCode (str) {
         let hash = 0;
@@ -65,13 +82,16 @@
         messageText = ''
     }
 
-    function scroll (node) {
-        if (node) node.scrollIntoView()
-    }
-
     function toggleNotifications () {
         console.log('toggle')
         notificationsActive = !notificationsActive
+    }
+
+    async function scroll () {
+        if (bottomRef) {
+            await tick()
+            bottomRef.scrollIntoView()
+        }
     }
 
     onMount(() => {
@@ -128,37 +148,39 @@
 
         </div>
 
-
     </header>
 
     <section bind:this={sectionRef}>
 
-        { #each events as event, i }
+        { #each eventsTF as event, i }
 
             { #if event.evt === 'add' }
 
-                <div class='bubble'
-                style={`background-color: rgb(220,220,220); color: black;`}
-
-                >
-                    <p>{event.usr} just joined the chat!</p>
-                </div>
+                <p class='event-join'>{event.usr} just joined the chat!</p>
 
             { :else }
 
                 <div
                     class='bubble'
                     class:mine={event.usr === usr}
-                    use:scroll
-                    style={`background-color: ${hashes.get(event.usr)};`}
+                    style={`border-color: ${hashes.get(event.usr)}`}
                 >
-                    <span class='name'>{ event.usr }</span>
+
+                    <div class="bubble-header">
+                        <span class='name' style={`color: ${hashes.get(event.usr)}`}>
+                            { event.usr }
+                        </span>
+
+                        <span class='time'>{ event.tf }</span>
+                    </div>
+
                     <p class='text'>{ event.txt }</p>
                 </div>
-
             { /if }
 
         { /each }
+
+        <div bind:this={bottomRef}/>
 
     </section>
 
@@ -184,6 +206,10 @@
         --footer-height: 60px;
         font-size: 16px;
         font-family: 'Montserrat', sans-serif;
+        background-color: #fcfcfc;
+        --text-color-dark: #202d34;
+        --text-color-light: #485963;
+        --pad: 0.5em;
     }
 
     header {
@@ -192,7 +218,7 @@
         display: grid;
         grid-template-columns: 1fr auto 1fr;
         align-items: center;
-        color: rgb(50,50,50);
+        color: var(--text-color-dark);
     }
 
     .control-panel {
@@ -215,7 +241,7 @@
     }
 
     button :global(svg) {
-        color: rgb(50,50,50);
+        color: var(--text-color-dark);
     }
 
     h1 {
@@ -233,29 +259,57 @@
         max-height: calc(100% - var(--header-height) - var(--footer-height));
         border: 0px solid red;
         bottom: var(--footer-height);
-        padding: 0 1em;
+        padding: 0 var(--pad);
+    }
+
+    .event-join {
+        font-style: italic;
+        margin: 1em 0;
+        color: var(--text-color-light);
     }
 
     .bubble {
         width: max-content;
         max-width: 80%;
-        margin-bottom: 1em;
-        padding: 1em;
-        border-radius: 1em;
-        color: white;
+        margin-bottom: var(--pad);
+        padding: var(--pad);
+        border-radius: 0;
+        color: var(--text-color-dark);
+    }
+
+    .bubble:not(.mine) {
+        border-left: 2px solid black;
     }
 
     .mine {
+        border-right: 2px solid black;
         margin-left: auto;
     }
 
-    .name {
+    .name, .time {
+        font-size: 0.75rem;
         font-style: italic;
-        color: rgb(220,220,220);
+        color: var(--text-color-light);
+    }
+
+    .time {
+        margin-left: var(--pad);
+    }
+
+    .bubble-header {
+        display: flex;
+    }
+
+    .mine > .bubble-header {
+        justify-content: flex-end;
     }
 
     .text {
-        margin-top: 0.5em;
+        margin-top: var(--pad);
+    }
+
+    .mine > .text {
+        text-align: right;
     }
 
     footer {

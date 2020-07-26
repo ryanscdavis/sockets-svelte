@@ -33,8 +33,13 @@
         }
 
         clientSocket = new ClientSocket(usrId, secure, host, chat)
+
         clientSocket.on('messages', data => messages = data.reverse())
-        clientSocket.on('message', data => messages = [ ...messages, data ])
+
+        clientSocket.on('message', data => {
+            console.log({ data })
+            messages = [ ...messages, data ]
+        })
         clientSocket.on('add', data => messages = [ ...messages, data ])
         clientSocket.on('friends', data => friends = data)
         clientSocket.connect()

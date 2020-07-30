@@ -224,7 +224,7 @@
     .control-panel {
         display: flex;
         justify-content: flex-end;
-        padding-right: 1em;
+        padding-right: 0;
         align-items: center;
         height: 100%;
     }
@@ -234,8 +234,8 @@
         outline: none;
         border: none;
         background-color: transparent;
+        margin: 0;
         padding: 0.75em;
-        margin: 0 0 0 0em;
         height: var(--header-height);
         width: var(--header-height);
     }

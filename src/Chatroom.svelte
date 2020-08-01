@@ -100,20 +100,25 @@
 
         isMounted = true
 
-        console.log('onmount', window.innerHeight)
+        if ('ResizeObserver' in window) {
 
-        const resizeObserver = new ResizeObserver(entries => {
-            for (const entry of entries) {
-                const windowHeight = window.innerHeight
-                const footerHeight = entry.contentRect.height
-                const sectionHeight = windowHeight - footerHeight - 40
-                sectionRef.style['bottom'] = (footerHeight).toString() + 'px'
+            const resizeObserver = new ResizeObserver(entries => {
+                for (const entry of entries) {
+                    const windowHeight = window.innerHeight
+                    const footerHeight = entry.contentRect.height
+                    const sectionHeight = windowHeight - footerHeight - 40
+                    sectionRef.style['bottom'] = (footerHeight).toString() + 'px'
 
-                console.log('resize', { windowHeight, footerHeight, sectionHeight })
-            }
-        })
+                    console.log('resize', { windowHeight, footerHeight, sectionHeight })
+                }
+            })
 
-        resizeObserver.observe(footerRef)
+            resizeObserver.observe(footerRef)
+
+        }
+        else {
+            alert('Your browser is old and does not support ResizeObserver. You should let Ryan know and then update your browser')
+        }
 
     })
 
@@ -122,6 +127,8 @@
 <main>
 
     <header>
+
+        <object class='logo' type="image/svg+xml" data='/chicken.svg' title='logo'></object>
 
         <h1>#{chat}</h1>
 
@@ -221,6 +228,11 @@
         color: var(--text-color-dark);
     }
 
+    .logo {
+        height: var(--header-height);
+        padding: var(--pad);
+    }
+
     .control-panel {
         display: flex;
         justify-content: flex-end;
@@ -245,8 +257,7 @@
     }
 
     h1 {
-        grid-column: 2;
-        font-size: inherit;
+         font-size: inherit;
         font-weight: bold;
         margin: 0;
         padding: 0;

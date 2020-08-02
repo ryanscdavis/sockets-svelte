@@ -137,7 +137,7 @@
     <header>
 
         <button class='logo-button' on:click={openSidebar}>
-            <object class='logo' type="image/svg+xml" data='/chicken.svg' title='logo'></object>
+            <img class='logo' src='/chicken.svg' alt='logo'/>
         </button>
 
         <h1>#{chat}</h1>

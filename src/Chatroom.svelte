@@ -13,6 +13,7 @@
     import Modal from './Modal.svelte'
     import ExternalLink from './ExternalLink.svelte'
     import FriendList from './FriendList.svelte'
+    import Sidebar from './Sidebar.svelte'
 
     export let chat = 'chatbox'
     export let usr = ''
@@ -28,6 +29,7 @@
     let footerRef = null
     let sectionRef = null
     let bottomRef = null
+    let sidebarOpen = false
     const dispatch = createEventDispatcher()
 
     const colors = [
@@ -122,13 +124,21 @@
 
     })
 
+
+    function openSidebar () {
+        console.log('click')
+        sidebarOpen = true
+    }
+
 </script>
 
 <main>
 
     <header>
 
-        <object class='logo' type="image/svg+xml" data='/chicken.svg' title='logo'></object>
+        <button class='logo-button' on:click={openSidebar}>
+            <object class='logo' type="image/svg+xml" data='/chicken.svg' title='logo'></object>
+        </button>
 
         <h1>#{chat}</h1>
 
@@ -187,6 +197,8 @@
 
         { /each }
 
+        { sidebarOpen }
+
         <div bind:this={bottomRef}/>
 
     </section>
@@ -202,6 +214,10 @@
             <FriendList { friends }/>
         { /if }
     </Modal>
+
+    <Sidebar open={sidebarOpen} on:close={() => sidebarOpen = false}>
+        Hello
+    </Sidebar>
 </main>
 
 <style>
@@ -217,6 +233,16 @@
         --text-color-dark: #202d34;
         --text-color-light: #485963;
         --pad: 0.5em;
+    }
+
+    .logo-button {
+        padding: 0;
+        margin: 0;
+    }
+
+
+    .logo-button:hover {
+        cursor: pointer;
     }
 
     header {

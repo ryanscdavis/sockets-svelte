@@ -29,7 +29,7 @@
 
     ul {
         --grey: rgb(220,220,220);
-        padding: 1em 0;
+        padding: 0;
         margin: 0 0;
         list-style: none;
     }
@@ -42,7 +42,6 @@
 
     li:first-child {
         border-top: 1px solid var(--grey);
-
     }
 
 </style>

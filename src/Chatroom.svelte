@@ -15,6 +15,7 @@
     import FriendList from './FriendList.svelte'
     import Sidebar from './Sidebar.svelte'
     import MainMenu from './MainMenu.svelte'
+    import ChatMenu from './ChatMenu.svelte'
 
     export let chat = 'chatbox'
     export let usr = ''
@@ -31,6 +32,7 @@
     let sectionRef = null
     let bottomRef = null
     let sidebarOpen = false
+    let chatmenuOpen = false
     const dispatch = createEventDispatcher()
 
     const colors = [
@@ -145,13 +147,11 @@
 
         <div class='control-panel'>
 
-            <button on:click={() => modalActive = 'Friends'}>
-                <Icon
-                    icon={faUserFriends}
-                />
+            <button on:click={() => chatmenuOpen = true}>
+                <Icon icon={faUserFriends} />
             </button>
 
-            <button on:click={() => modalActive = 'Ext'}>
+            <!-- <button on:click={() => modalActive = 'Ext'}>
                 <Icon
                     icon={faExternalLinkAlt}
                 />
@@ -162,7 +162,7 @@
                     icon={notificationsActive ? faBell : faBellSlash}
                     class='notification-icon'
                 />
-            </button>
+            </button> -->
 
         </div>
 
@@ -193,7 +193,9 @@
                     </div>
 
                     <p class='text'>{ event.txt }</p>
+
                 </div>
+
             { /if }
 
         { /each }
@@ -214,9 +216,22 @@
         { /if }
     </Modal>
 
-    <Sidebar open={sidebarOpen} on:close={() => sidebarOpen = false}>
+    <Sidebar 
+        open={sidebarOpen} 
+        side='left'
+        on:close={() => sidebarOpen = false}
+    >
         <MainMenu/>
     </Sidebar>
+
+    <Sidebar
+        open={chatmenuOpen}
+        side='right'
+        on:close={() => chatmenuOpen = false}
+    >
+        <ChatMenu {chatUrl} { friends }/>
+    </Sidebar>
+
 </main>
 
 <style>

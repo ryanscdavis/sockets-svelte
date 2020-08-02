@@ -15,6 +15,7 @@
     let messages = []
     let friends = []
     let clientSocket = null
+    let hash
 
     $: hash = window.location.hash
     $: chat = hash.substr(1)
@@ -22,6 +23,8 @@
     $: chatUrl = window.location.href
 
     onMount(() => {
+
+        hash = window.location.hash
 
         const host = window.location.host
 
@@ -57,6 +60,10 @@
             usr = localStorage.getItem(chat)
         }
 
+        window.addEventListener('hashchange', () => console.log(hash))
+
+        fetch(`/api/${chat}/friends`).then(console.log)
+
     })
 
     const sendMessage = (event) => {
@@ -74,7 +81,6 @@
 
         const storage = new Storage()
         const obj = storage.has('chats') ? storage.getObject('chats') : {}
-        console.log({ obj })
         obj[chat] = usr
         storage.setObject('chats', obj)
     }
@@ -143,12 +149,6 @@
         const permission = await askPermission()
         const subscription = await subscribeUserToPush(registration)
         const response = await sendSubscription(chat, subscription)
-
-        console.log('show notifcaiton', registration)
-
-        // navigator.serviceWorker.ready.then(registration => {
-        //     registration.showNotification('hello world')
-        // })
 
     }
 

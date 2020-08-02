@@ -14,6 +14,7 @@
     import ExternalLink from './ExternalLink.svelte'
     import FriendList from './FriendList.svelte'
     import Sidebar from './Sidebar.svelte'
+    import MainMenu from './MainMenu.svelte'
 
     export let chat = 'chatbox'
     export let usr = ''
@@ -197,8 +198,6 @@
 
         { /each }
 
-        { sidebarOpen }
-
         <div bind:this={bottomRef}/>
 
     </section>
@@ -216,7 +215,7 @@
     </Modal>
 
     <Sidebar open={sidebarOpen} on:close={() => sidebarOpen = false}>
-        Hello
+        <MainMenu/>
     </Sidebar>
 </main>
 

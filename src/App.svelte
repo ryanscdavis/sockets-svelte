@@ -2,6 +2,7 @@
 
     import { onMount } from 'svelte'
     import ClientSocket from './ClientSocket.js'
+    import Storage from './Storage.js'
 
     import Name from './Name.svelte'
     import Chatroom from './Chatroom.svelte'
@@ -70,6 +71,12 @@
         usr = event.detail.usr
         localStorage.setItem(chat, usr)
         clientSocket.send('add', { usrId, usr, chat })
+
+        const storage = new Storage()
+        const obj = storage.has('chats') ? storage.getObject('chats') : {}
+        console.log({ obj })
+        obj[chat] = usr
+        storage.setObject('chats', obj)
     }
 
     function askPermission () {

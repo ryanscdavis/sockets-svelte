@@ -109,12 +109,8 @@
 
             const resizeObserver = new ResizeObserver(entries => {
                 for (const entry of entries) {
-                    const windowHeight = window.innerHeight
                     const footerHeight = entry.contentRect.height
-                    const sectionHeight = windowHeight - footerHeight - 40
                     sectionRef.style['bottom'] = (footerHeight).toString() + 'px'
-
-                    console.log('resize', { windowHeight, footerHeight, sectionHeight })
                 }
             })
 
@@ -150,19 +146,6 @@
             <button on:click={() => chatmenuOpen = true}>
                 <Icon icon={faUserFriends} />
             </button>
-
-            <!-- <button on:click={() => modalActive = 'Ext'}>
-                <Icon
-                    icon={faExternalLinkAlt}
-                />
-            </button>
-
-            <button on:click={() => notificationsActive = !notificationsActive}>
-                <Icon
-                    icon={notificationsActive ? faBell : faBellSlash}
-                    class='notification-icon'
-                />
-            </button> -->
 
         </div>
 
@@ -307,7 +290,7 @@
         position: absolute;
         width: 100%;
         overflow-y: auto;
-        max-height: calc(100% - var(--header-height) - var(--footer-height));
+        max-height: calc(100% - var(--header-height) - var(--footer-height) + 1px);
         border: 0px solid red;
         bottom: var(--footer-height);
         padding: 0 var(--pad);

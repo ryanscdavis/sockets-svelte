@@ -62,7 +62,7 @@
 
         window.addEventListener('hashchange', () => console.log(hash))
 
-        fetch(`/api/${chat}/friends`).then(console.log)
+        //fetch(`/api/${chat}/friends`).then(console.log)
 
     })
 
@@ -160,7 +160,3 @@
 { :else }
     <Chatroom { usr } events={ messages } { chat } { chatUrl } { friends } on:send={sendMessage}/>
 { /if }
-
-<style>
-</style>
-

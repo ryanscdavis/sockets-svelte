@@ -19,7 +19,6 @@
             "type": "image/png"
         }
     ],
-    "start_url": "/",
     "display": "fullscreen",
     "theme_color": "rgb(61, 130, 236)",
     "background_color": "rgb(61, 130, 236)"

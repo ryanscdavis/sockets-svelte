@@ -146,6 +146,42 @@ class DynamoApi {
 
     }
 
+    async getEvents ({ chat, lastKey }) {
+
+        const promise = new Promise((resolve, reject) => {
+
+            const documentClient = new AWS.DynamoDB.DocumentClient({
+                'region': this.region
+            })
+
+            const pk = `CHAT#${chat}`
+
+            const params = {
+                TableName: this.tableName,
+                KeyConditionExpression: 'pk = :pk',
+                ExpressionAttributeValues: { ':pk': pk },
+                ScanIndexForward: true,
+                Limit: 50
+            }
+
+            if (lastKey) params['ExclusiveStartKey'] = lastKey
+
+            const callback = (err, data) => {
+                if (err) reject(err)
+                else {
+                    const results = [ data.Items, data.LastEvaluatedKey ]
+                    resolve(results)
+                }
+            }
+
+            documentClient.query(params, callback)
+
+        })
+
+        return promise
+
+    }
+
     // returns the last 50 messages
     // if chat does not exist, returns empty array
     async latestMessages ({ chat }) {

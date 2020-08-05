@@ -1,11 +1,52 @@
 
 const AWS = require('aws-sdk')
 
+const Event = require('./Event.js')
+
 class DynamoApi {
 
     constructor({ tableName, region }) {
+
         this.tableName = tableName
         this.region = region
+
+        this.documentClient = new AWS.DynamoDB.DocumentClient({
+            'region': this.region
+        })
+
+    }
+
+    async createEvent (data) {
+
+        const promise = new Promise((resolve, reject) => {
+
+            const chat  = data['chat']
+            const ts    = data['ts']
+            const usr   = data['usr']
+
+            const pk = `CHAT#${chat}`
+            const sk = `TS#${ts}#USR#${usr}`
+
+            const event = new Event ({ ...data, pk, sk })
+
+            const item = { pk, sk, ...event.getData() }
+
+            const params = {
+                TableName: this.tableName,
+                Item: item
+            }
+
+            const callback = (err, data) => {
+                if (err) reject(err)
+                else resolve(event)
+            }
+
+            this.documentClient.put(params, callback)
+
+        })
+
+        return promise
+
     }
 
     // write event to the database
@@ -161,7 +202,7 @@ class DynamoApi {
                 KeyConditionExpression: 'pk = :pk',
                 ExpressionAttributeValues: { ':pk': pk },
                 ScanIndexForward: true,
-                Limit: 50
+                Limit: 20
             }
 
             if (lastKey) params['ExclusiveStartKey'] = lastKey

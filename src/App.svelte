@@ -46,7 +46,7 @@
 
         // TODO: ask for notification permission
 
-        const eventSource = new EventSource(`/api/events/${chat}`)
+        const eventSource = new EventSource(`/api/${chat}/events`)
 
         eventSource.onopen = (event) => {
             console.log('open');
@@ -65,11 +65,18 @@
 
     })
 
-    const sendMessage = (event) => {
+    const sendMessage = async (event) => {
 
-        // const txt = event.detail.txt
-        // const data = { chat, usr, txt }
-        // clientSocket.send('message', data)
+        const evt = 'message'
+        const txt = event.detail.txt
+        const data = { chat, usr, txt, evt }
+
+        const url = `/api/${chat}/events`
+        const method = 'POST'
+        const headers = { 'Content-Type': 'application/json' }
+        const body = JSON.stringify(data)
+
+        const response = await fetch(url, { method, headers, body })
 
     }
 

@@ -1,31 +1,31 @@
 
 const Joi = require('@hapi/joi')
 
-const crtObj = {
+const create = {
     chat: Joi.string(),
-    evt: Joi.string().valid('crt'),
+    evt: Joi.string().valid('create'),
     ts: Joi.date().iso(),
     usr: Joi.string()
 }
 
-const conObj = {
+const connect = {
     chat: Joi.string(),
-    evt: Joi.string().valid('con'),
+    evt: Joi.string().valid('connect'),
     ts: Joi.date().iso(),
     usrId: Joi.string(),
     con: Joi.number().valid(1, -1)
 }
 
-const addObj = {
+const join = {
     chat: Joi.string(),
     evt: Joi.string().valid('join'),
     ts: Joi.date().iso(),
     usr: Joi.string(),
 }
 
-const subObj = {
+const subscribe = {
     chat: Joi.string(),
-    evt: Joi.string().valid('sub'),
+    evt: Joi.string().valid('subscribe'),
     ts: Joi.date().iso(),
     usr: Joi.string(),
     endpoint: Joi.string(),
@@ -33,22 +33,23 @@ const subObj = {
         p256dh: Joi.string(),
         auth: Joi.string()
     }),
-    subscribe: Joi.number().valid(1,-1)
 }
 
-const msgObj = {
+const message = {
+    pk: Joi.string(),
+    sk: Joi.string(),
     chat: Joi.string(),
-    evt: Joi.string().valid('msg'),
+    evt: Joi.string().valid('message'),
     ts: Joi.date().iso(),
     usr: Joi.string(),
     txt: Joi.string()
 }
 
 const schema = new Map()
-schema.set('crt', Joi.object(crtObj).options({ presence: 'required' }))
-schema.set('join', Joi.object(addObj).options({ presence: 'required' }))
-schema.set('sub', Joi.object(subObj).options({ presence: 'required' }))
-schema.set('msg', Joi.object(msgObj).options({ presence: 'required' }))
+schema.set('crt', Joi.object(create).options({ presence: 'required', allowUnknown: false }))
+schema.set('join', Joi.object(join).options({ presence: 'required', allowUnknown: false }))
+schema.set('subscribe', Joi.object(subscribe).options({ presence: 'required', allowUnknown: false }))
+schema.set('message', Joi.object(message).options({ presence: 'required', allowUnknown: false }))
 
 class Event {
 

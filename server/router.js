@@ -4,6 +4,7 @@ const DynamoApi = require('./DynamoApi.js')
 
 const { PassThrough } = require('stream')
 const SSEtransform = require('./SSEtransform.js')
+const Event = require('./Event.js')
 
 const NotificationService = require('./NotificationService.js')
 
@@ -29,6 +30,26 @@ router.post('/api/subscriptions', ctx => {
     ctx.status = 200
 })
 
+router.post('/api/:chat/events', async ctx => {
+
+    console.log('request post event')
+    const chat = ctx.params.chat
+    const ts = (new Date()).toISOString()
+
+    const data = Object.assign(ctx.request.body, { chat, ts })
+    console.log(data);
+
+    try {
+        const event = new Event(data)
+        await db.writeEvent(event)
+        ctx.status = 201
+    }
+    catch (error) {
+        ctx.status = 500
+    }
+
+})
+
 router.get('/api/events/:chat', async ctx => {
 
     const chat = ctx.params.chat
@@ -52,6 +73,8 @@ router.get('/api/events/:chat', async ctx => {
         [ events, lastKey ] = await db.getEvents({ chat, lastKey })
         events.forEach(e => ctx.body.write({ id: e.sk, data: e }) )
     }
+
+    // TODO: save ctx
 
 })
 

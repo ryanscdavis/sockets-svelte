@@ -18,11 +18,9 @@ const conObj = {
 
 const addObj = {
     chat: Joi.string(),
-    evt: Joi.string().valid('add'),
+    evt: Joi.string().valid('join'),
     ts: Joi.date().iso(),
-    usrId: Joi.string(),
     usr: Joi.string(),
-    add: Joi.number().valid(1,-1)
 }
 
 const subObj = {
@@ -48,7 +46,7 @@ const msgObj = {
 
 const schema = new Map()
 schema.set('crt', Joi.object(crtObj).options({ presence: 'required' }))
-schema.set('add', Joi.object(addObj).options({ presence: 'required' }))
+schema.set('join', Joi.object(addObj).options({ presence: 'required' }))
 schema.set('sub', Joi.object(subObj).options({ presence: 'required' }))
 schema.set('msg', Joi.object(msgObj).options({ presence: 'required' }))
 

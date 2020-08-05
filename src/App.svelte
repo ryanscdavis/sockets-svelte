@@ -12,7 +12,7 @@
 
     let usr = null
     let usrId = null
-    let messages = []
+    let events = []
     let friends = []
     let clientSocket = null
     let hash
@@ -58,7 +58,7 @@
 
             const data = JSON.parse(event.data)
             const { chat, usr, ts, txt, evt } = data
-            messages = [ ...messages, { chat, usr, ts, txt, evt }]
+            events = [ ...events, { chat, usr, ts, txt, evt }]
 
         }
 
@@ -73,15 +73,33 @@
 
     }
 
-    function handleJoin (event) {
+    async function handleJoin (event) {
+
+        const evt = 'join'
+
+        try {
+
+            const response = await fetch(`/api/${chat}/events`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usr: event.detail.usr, chat, evt })
+            })
+
+            console.log('joined chat')
+
+        }
+        catch (error) {
+            console.error('could not join chat for some reasone')
+        }
+        
         usr = event.detail.usr
         localStorage.setItem(chat, usr)
-        // clientSocket.send('add', { usrId, usr, chat })
 
         const storage = new Storage()
         const obj = storage.has('chats') ? storage.getObject('chats') : {}
         obj[chat] = usr
         storage.setObject('chats', obj)
+
     }
 
 </script>
@@ -89,5 +107,5 @@
 { #if usr === null }
     <Name on:join={handleJoin}/>
 { :else }
-    <Chatroom { usr } events={ messages } { chat } { chatUrl } { friends } on:send={sendMessage}/>
+    <Chatroom { usr } { events } { chat } { chatUrl } { friends } on:send={sendMessage}/>
 { /if }

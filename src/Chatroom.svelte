@@ -155,7 +155,7 @@
 
         { #each eventsTF as event, i }
 
-            { #if event.evt === 'add' }
+            { #if event.evt === 'join' }
 
                 <p class='event-join'>{event.usr} just joined the chat!</p>
 

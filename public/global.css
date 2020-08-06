@@ -1,6 +1,6 @@
 /* Border box declaration
 https://www.paulirish.com/2012/box-sizing-border-box-ftw/ */
-html {
+* {
     box-sizing: border-box;
 }
 
@@ -14,12 +14,6 @@ body {
 p {
     margin: 0;
     padding: 0;
-}
-
-*,
-*:before,
-*:after {
-    box-sizing: inherit;
 }
 
 /* by default, images are inline elements and a gap forms around them */

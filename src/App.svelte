@@ -52,15 +52,18 @@
             console.log('open');
         }
 
-        eventSource.onmessage = (event) => {
-
-            console.log('unnamed message', event.lastEventId);
-
+        eventSource.addEventListener('message', event => {
             const data = JSON.parse(event.data)
             const { chat, usr, ts, txt, evt } = data
             events = [ ...events, { chat, usr, ts, txt, evt }]
+        })
 
-        }
+        eventSource.addEventListener('join', event => {
+            const data = JSON.parse(event.data)
+            const { chat, usr, ts, evt } = data
+            events = [ ...events, { chat, usr, ts, evt }]
+            friends = [ ...friends, usr ]
+        })
 
 
     })

@@ -131,7 +131,7 @@
 
 </script>
 
-<main>
+<div class='chatroom'>
 
     <header>
 
@@ -151,7 +151,7 @@
 
     </header>
 
-    <section bind:this={sectionRef}>
+    <main bind:this={sectionRef}>
 
         { #each eventsTF as event, i }
 
@@ -185,7 +185,7 @@
 
         <div bind:this={bottomRef}/>
 
-    </section>
+    </main>
 
     <footer bind:this={footerRef}>
         <InputBox on:submit={handleSend}/>
@@ -215,21 +215,23 @@
         <ChatMenu {chatUrl} { friends }/>
     </Sidebar>
 
-</main>
+</div>
 
 <style>
 
-    main {
+    .chatroom {
+        height: 100%;
         width: 100%;
         margin: 0 auto;
         --header-height: 40px;
         --footer-height: 60px;
         font-size: 16px;
         font-family: 'Montserrat', sans-serif;
-        background-color: #fcfcfc;
+        --bg-color: #fcfcfc;
         --text-color-dark: #202d34;
         --text-color-light: #485963;
         --pad: 0.5em;
+        background-color: var(--bg-color);
     }
 
     .logo-button {
@@ -244,11 +246,14 @@
 
     header {
         height: var(--header-height);
-        box-shadow: 0 5px 10px 5px rgba(0,0,0,0.05);
+        /* box-shadow: 0 5px 10px 5px rgba(0,0,0,0.05); */
         display: grid;
         grid-template-columns: 1fr auto 1fr;
         align-items: center;
         color: var(--text-color-dark);
+        border-bottom: 1px solid #ccc;
+        background-color: var(--bg-color);
+        z-index: 10;
     }
 
     .logo {
@@ -286,14 +291,15 @@
         padding: 0;
     }
 
-    section {
+    main {
         position: absolute;
         width: 100%;
         overflow-y: auto;
-        max-height: calc(100% - var(--header-height) - var(--footer-height) + 1px);
+        max-height: calc(100% - var(--header-height) - var(--footer-height));
         border: 0px solid red;
         bottom: var(--footer-height);
         padding: 0 var(--pad);
+        background-color: var(--bg-color);
     }
 
     .event-join {
@@ -351,6 +357,7 @@
         position: absolute;
         bottom: 0;
         width: 100%;
+        background-color: var(--bg-color);
     }
 
 </style>

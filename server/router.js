@@ -64,12 +64,12 @@ router.get('/api/:chat/events', async ctx => {
 
     // get first items
     [ events, lastKey ] = await db.getEvents({ chat, lastKey })
-    events.forEach(e => ctx.body.write({ id: e.sk, data: e }) )
+    events.forEach(e => ctx.body.write({ id: e.sk, event: e.evt, data: e }) )
 
     // get remaining items
     while (lastKey) {
         [ events, lastKey ] = await db.getEvents({ chat, lastKey })
-        events.forEach(e => ctx.body.write({ id: e.sk, data: e }) )
+        events.forEach(e => ctx.body.write({ id: e.sk, event: e.evt, data: e }) )
     }
 
     Connections.add(ctx)

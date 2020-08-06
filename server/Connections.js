@@ -28,7 +28,7 @@ class Connections {
 
         this.connections.forEach(ctx => {
             const data = event.getData()
-            if (ctx.params.chat === chat) ctx.body.write({ id: data.sk, data: data })
+            if (ctx.params.chat === chat) ctx.body.write({ id: data.sk, event: data.evt, data: data })
         })
 
     }

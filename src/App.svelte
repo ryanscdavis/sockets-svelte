@@ -1,6 +1,6 @@
 <script>
 
-    import { onMount } from 'svelte'
+    import { onMount, onDestroy } from 'svelte'
     import ClientSocket from './ClientSocket.js'
     import Storage from './Storage.js'
 
@@ -9,6 +9,8 @@
 
     import toUint8Array from 'urlb64touint8array'
     import uuid from 'uuid/v4'
+
+    import store from './store.js'
 
     let usr = null
     let usrId = null
@@ -40,31 +42,7 @@
             usr = localStorage.getItem(chat)
         }
 
-        // TODO: switch chatrooms on hashchange
-        // window.addEventListener('hashchange', () => console.log(hash))
-
-
-        // TODO: ask for notification permission
-
-        const eventSource = new EventSource(`/api/${chat}/events`)
-
-        eventSource.onopen = (event) => {
-            console.log('open');
-        }
-
-        eventSource.addEventListener('message', event => {
-            const data = JSON.parse(event.data)
-            const { chat, usr, ts, txt, evt } = data
-            events = [ ...events, { chat, usr, ts, txt, evt }]
-        })
-
-        eventSource.addEventListener('join', event => {
-            const data = JSON.parse(event.data)
-            const { chat, usr, ts, evt } = data
-            events = [ ...events, { chat, usr, ts, evt }]
-            friends = [ ...friends, usr ]
-        })
-
+        store.addChat(chat)
 
     })
 
@@ -117,5 +95,5 @@
 { #if usr === null }
     <Name on:join={handleJoin}/>
 { :else }
-    <Chatroom { usr } { events } { chat } { chatUrl } { friends } on:send={sendMessage}/>
+    <Chatroom { usr } { chat } { chatUrl } on:send={sendMessage}/>
 { /if }

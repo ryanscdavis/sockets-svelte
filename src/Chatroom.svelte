@@ -10,24 +10,22 @@
     import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons/faExternalLinkAlt'
 
     import InputBox from './InputBox.svelte'
-    import Modal from './Modal.svelte'
     import ExternalLink from './ExternalLink.svelte'
     import FriendList from './FriendList.svelte'
     import Sidebar from './Sidebar.svelte'
     import MainMenu from './MainMenu.svelte'
     import ChatMenu from './ChatMenu.svelte'
 
+    import Store from './store.js'
+
     export let chat = 'chatbox'
     export let usr = ''
-    export let events = []
     export let chatUrl = ''
-    export let friends = []
 
     let messageText = ''
     let lastMessageRef = null
     let isMounted = false
     let notificationsActive = false
-    let modalActive = null
     let footerRef = null
     let sectionRef = null
     let bottomRef = null
@@ -45,7 +43,7 @@
         '#341f97'
     ]
 
-    $: hashes = events.reduce((acc, msg) => {
+    $: hashes = $Store[chat]['events'].reduce((acc, msg) => {
         if (!acc.has(msg.usr)) {
             const h = hashCode(msg.usr)
             const i = h % colors.length
@@ -55,11 +53,9 @@
         return acc
     }, new Map())
 
-    $: events && events.length && isMounted && scroll()
+    $: $Store[chat]['events'] && isMounted && scroll()
 
-    $: events && scroll()
-
-    $: eventsTF = events.map(evt => {
+    $: eventsTF = $Store[chat]['events'].map(evt => {
         const t = new Date(evt.ts)
         let h = t.getHours() % 12
         h = h === 0 ? 12 : h
@@ -191,14 +187,6 @@
         <InputBox on:submit={handleSend}/>
     </footer>
 
-    <Modal active={modalActive} on:close={() => modalActive = null}>
-        { #if modalActive === 'Ext' }
-            <ExternalLink { chatUrl } on:copy={() => modalActive = null}/>
-        { :else }
-            <FriendList { friends }/>
-        { /if }
-    </Modal>
-
     <Sidebar 
         open={sidebarOpen} 
         side='left'
@@ -212,7 +200,7 @@
         side='right'
         on:close={() => chatmenuOpen = false}
     >
-        <ChatMenu {chatUrl} { friends }/>
+        <ChatMenu {chatUrl} { chat }/>
     </Sidebar>
 
 </div>

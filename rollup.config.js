@@ -5,6 +5,7 @@ import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import json from '@rollup/plugin-json';
 // import rollupServe from 'rollup-plugin-serve'
+import replace from '@rollup/plugin-replace'
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -19,6 +20,11 @@ export default {
     plugins: [
 
         json(),
+
+        // needed for immer to work
+        replace({
+            'process.env.NODE_ENV': JSON.stringify('production')
+        }),
 
         svelte({
             // enable run-time checks when not in production

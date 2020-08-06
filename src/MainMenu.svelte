@@ -7,11 +7,16 @@
     let chats = []
 
     onMount(() => {
+
+        console.log('mount')
+
         const storage = new Storage()
+
         if (storage.has('chats')) {
             const obj = storage.getObject('chats')
             chats = Object.keys(obj)
         }
+
     })
 
 </script>

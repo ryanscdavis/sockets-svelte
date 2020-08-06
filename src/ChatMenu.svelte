@@ -2,8 +2,9 @@
 <script>
 
     import { onMount } from 'svelte';
+    import store from './store.js'
 
-    export let friends = []
+    export let chat = '' 
     export let chatUrl = ''
 
 </script>
@@ -22,7 +23,7 @@
     <p class='label'>Friends</p>
 
     <ul>
-        { #each friends as friend }
+        { #each $store[chat]['friends'] as friend }
             <li>
                 {friend}
             </li>

@@ -34,7 +34,7 @@
     "koa-send": "^5.0.0",
     "koa-static": "^5.0.0",
     "sirv-cli": "^0.4.4",
-    "url-parse": "^1.4.7",
+    "url-parse": "^1.5.0",
     "urlb64touint8array": "^1.0.3",
     "web-push": "^3.4.4",
     "ws": "^7.3.1"
